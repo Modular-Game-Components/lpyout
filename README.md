@@ -12,3 +12,7 @@ Grids play a fundamental role in layout for games and other applications. Consid
 # Documentation
 
 An API reference and guides on how to use `lpyout` can be found on [readthedocs.](https://lpyout.readthedocs.io/en/latest/)
+
+# Contributing
+
+Feel free to [file an issue](https://github.com/Modular-Game-Components/lpyout/issues), [make a pull request](https://github.com/Modular-Game-Components/lpyout/pulls) or, if you really like the project, [donate.](https://www.paypal.com/donate/?business=9ZQ9S6RJBVATY&no_recurring=0&currency_code=USD) (No pressure though.)
