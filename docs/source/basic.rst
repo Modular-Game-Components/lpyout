@@ -4,6 +4,7 @@ The Basics: Getting a Grid (Pygame)
 Consider the following introductory example from `Pygame-ce <https://pyga.me/docs/>`:
 
 .. code-block:: python
+
    import pygame
 
    # pygame setup

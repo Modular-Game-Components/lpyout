@@ -1,5 +1,5 @@
 API
 ===
 
-.. automodapi:: lpyout
-   :no-inheritance-diagram:
+.. automodule:: lpyout
+   :members:
