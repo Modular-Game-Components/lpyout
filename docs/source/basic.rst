@@ -65,3 +65,8 @@ Now, replace ``screen.fill("purple")`` with ``screen.fill("black")`` and right b
 Like above, in case the window changes size, we ``.update`` the ``screen_wrapper`` object. Lastly, we make a call to ``fast_render(grid, screen)`` to actually render the grid! You should get a screen that resembles:
 
 .. image:: lpyout_fast_grid.png
+
+
+.. note::
+
+  The ``fast_render`` literally draws lines for every row and column, but we might have a sophisticated grid (for instance, each square might have some padding) where we will need more than lines for drawing grids. Another alternative is to use ``render_recursive``, but we might need even more control than ``render_recusrive`` to generate something like a dungeon for a game. Fortunately, ``lpyout`` provides powerful tools to easily create sophisticated grids.

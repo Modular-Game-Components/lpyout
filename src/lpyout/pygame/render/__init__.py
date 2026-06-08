@@ -1,5 +1,5 @@
 import pygame
-from ... import Grid, Cell
+from ... import Grid, grid_map
 
 
 def fast_render(grid: Grid, surface, color=(255, 255, 255), w=1):
@@ -25,9 +25,8 @@ def line_render(grid: Grid, surface):
 def render_recursive(grid: Grid, surface,
                      color=(255,255,255), line_thickness=1):
     """Render with style."""
-    if isinstance(grid, Cell):
-        rect = pygame.Rect(grid.x, grid.y, grid.w, grid.h)
+    def render(g):
+        rect = pygame.Rect(g.x, g.y, g.w, g.h)
         pygame.draw.rect(surface, color, rect, line_thickness)
-    else:
-        for subgrid in grid:
-            render_recursive(subgrid, surface)
+
+    grid_map(render, grid)

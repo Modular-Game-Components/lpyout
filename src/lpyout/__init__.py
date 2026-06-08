@@ -2,6 +2,7 @@ from __future__ import annotations
 from enum import Enum
 from itertools import pairwise, accumulate
 import types
+from typing import Any, Callable
 
 
 def raw_coords(v1: Screen | Grid, v2: Screen | Grid):
@@ -15,6 +16,13 @@ def frac_coords(v1: Screen | Grid, v2: Screen | Grid):
     raw_x = v1.x - v2.x
     raw_y = v1.y - v2.y
     return (raw_x / v2.w, raw_y / v2.h)
+
+def grid_map(f: Callable[[Cell], Any], grid: Grid):
+    if isinstance(grid, Cell):
+        f(grid)
+    else:
+        for subgrid in grid:
+            grid_map(f, subgrid)
 
 
 class ScreenSize(Enum):
