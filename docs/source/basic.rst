@@ -91,3 +91,23 @@ What did we do? We created a grid that was fullscreen and by specifying ``m=30``
 .. important::
    
    ``grid.x``, ``grid.y``, ``grid.w``, and ``grid.h`` always reflect the raw coordinates *after* applying margins to the grid.
+
+=======
+Padding
+=======
+
+Padding is related to margin. As mentioned before, margin changes the grid's ``x``, ``y``, ``w``, and ``h``. Padding on the otherhand, changes the children ``x``, ``y``, ``w``, and ``h``. The distinction is exceptionally important for ``fast_render`` because ``fast_render`` only uses the grid's ``x``, ``y``, ``w``, and ``h`` to render the grid. So, changing
+
+.. code-block:: python
+
+   grid = Grid.fill_screen(screen_wrapper, 5, 5)
+
+to
+
+.. code-block:: python
+
+   grid = Grid.fill_screen(screen_wrapper, 5, 5, p=30)
+
+will render like the very first example (i.e. completely fullscreen). To rectify this, we can use ``render_recursive`` instead of ``fast_render``. ``render_recursive`` renders each individual ``Cell`` as a square. Furthermore, when we run ``Grid.fill_screen(...)`` we create a grid with ``5 x 5 = 25`` ``Cells``. ``render_recursive`` finds every cell in a grid and performs some operation based on the *cell* and *not* the parent grid. We will cover this more in detail why this is important. But switching out ``fast_render`` with ``render_recursive`` will give the same as the margin example visually.
+   
+
