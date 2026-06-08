@@ -66,7 +66,28 @@ Like above, in case the window changes size, we ``.update`` the ``screen_wrapper
 
 .. image:: lpyout_fast_grid.png
 
+=======
+Margins
+=======
 
-.. note::
+Full screen is nice, but a lot of interfaces do not operate on precisely fullscreen. Instead, there might be a little nudge to make it a bit smaller (or larger) depending on what we want. There are a couple ways to deal with this, let's focus on *margins*. Change:
 
-  The ``fast_render`` literally draws lines for every row and column, but we might have a sophisticated grid (for instance, each square might have some padding) where we will need more than lines for drawing grids. Another alternative is to use ``render_recursive``, but we might need even more control than ``render_recusrive`` to generate something like a dungeon for a game. Fortunately, ``lpyout`` provides powerful tools to easily create sophisticated grids.
+.. code-block:: python
+
+   grid = Grid.fill_screen(screen_wrapper, 5, 5)
+
+to:
+
+.. code-block:: python
+
+   grid = Grid.fill_screen(screen_wrapper, 5, 5, m=30)
+
+This will change the grid to:
+
+.. image:: lpyout_fast_margin.png
+
+What did we do? We created a grid that was fullscreen and by specifying ``m=30`` we said shrink each side of the grid by ``30px``. Internally, setting ``m=30`` changes the ``x``, ``y``, ``w``, and ``h`` of the grid we made.
+
+.. important::
+   
+   ``grid.x``, ``grid.y``, ``grid.w``, and ``grid.h`` always reflect the raw coordinates *after* applying margins to the grid.
