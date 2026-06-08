@@ -62,4 +62,6 @@ Now, replace ``screen.fill("purple")`` with ``screen.fill("black")`` and right b
        screen_wrapper.update()
        fast_render(grid, screen)
 
-Like above, in case the window changes size, we ``.update`` the ``screen_wrapper`` object. Lastly, we make a call to ``fast_render(grid, screen)`` to actually render the grid!
+Like above, in case the window changes size, we ``.update`` the ``screen_wrapper`` object. Lastly, we make a call to ``fast_render(grid, screen)`` to actually render the grid! You should get a screen that resembles:
+
+.. image:: lpyout_fast_grid.png
