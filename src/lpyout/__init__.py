@@ -170,27 +170,22 @@ class Grid:
                    parent=parent,
                    anchor=anchor)
         if grid.widths is None:
-            w = (grid.w - grid.pl - grid.pr) / grid.col_count
+            w = grid.w / grid.col_count
             grid.widths = [w for _ in range(grid.col_count)]
         if grid.heights is None:
-            h = (grid.h - grid.pb - grid.pt) / grid.row_count
+            h = grid.h / grid.row_count
             grid.heights = [h for _ in range(grid.row_count)]
         # Fill the children with uniform sized cells.
-        x_offset = grid.x + grid.pl
-        y_offset = grid.y + grid.pt
         accum_w = list(accumulate(grid.widths, initial=0))
         accum_h = list(accumulate(grid.heights, initial=0))
         for i, w in enumerate(grid.widths):
             grid.children.append([])
             for j, h in enumerate(grid.heights):
-                cell_w = w - (grid.pl + grid.pr) / grid.col_count - spacing
-                cell_h = h - (grid.pt + grid.pb) / grid.row_count - spacing
                 disp_w = accum_w[i]
                 disp_h = accum_h[j]
                 grid.children[i].append(
-                    Cell(x_offset + disp_w,
-                         y_offset + disp_h,
-                         cell_w, cell_h,
+                    Cell(grid.x + disp_w, grid.y + disp_h,
+                         w, h,
                          parent=grid,
                          index=(i, j))
                 )
@@ -277,7 +272,11 @@ class Grid:
     @property
     def x(self):
         """self.x (but remember it is influenced by margin!)"""
-        return self._x + self.ml
+        if self.parent is None or isinstance(self.parent, Screen):
+            return self._x + self.ml
+        else:
+            return self._x + self.ml + self.parent.pl \
+                - (self.index[0] * (self.parent.pl + self.parent.pr) / self.parent.col_count)
 
     @x.setter
     def x(self, val):
@@ -288,7 +287,11 @@ class Grid:
     @property
     def y(self):
         """self.y (but remember it is influenced by margin!)"""
-        return self._y + self.mt
+        if self.parent is None or isinstance(self.parent, Screen):
+            return self._y + self.mt
+        else:
+            return self._y + self.mt + self.parent.pt \
+                - (self.index[1] * (self.parent.pt + self.parent.pb) / self.parent.row_count)
 
     @y.setter
     def y(self, val):
@@ -298,7 +301,14 @@ class Grid:
 
     @property
     def w(self):
-        return min(self.max_w, self._w - (self.mr + self.ml))
+        if self.parent is None or isinstance(self.parent, Screen):
+            return min(self.max_w, self._w - (self.mr + self.ml))
+        pw = self.parent.w
+        # Width fraction of parent (no padding)
+        wf = self._w / pw
+        cw = self.parent.w - (self.parent.pr + self.parent.pl)
+        new_width = wf * cw
+        return min(self.max_w, new_width - (self.mr + self.ml))
 
     @w.setter
     def w(self, val):
@@ -307,7 +317,10 @@ class Grid:
 
     @property
     def h(self):
-        return min(self.max_h, self._h - (self.mb + self.mt))
+        if self.parent is None or isinstance(self.parent, Screen):
+            return min(self.max_h, self._h - (self.mb + self.mt))
+        return min(self.max_h, self._h - (self.mb + self.mt)
+                                       - (self.parent.pb + self.parent.pt) / self.parent.row_count)
 
     @h.setter
     def h(self, val):
@@ -327,7 +340,6 @@ class Grid:
         self.pr = val
         self.pt = val
         self.pb = val
-        self._update_children()
 
     @property
     def px(self):
@@ -338,7 +350,6 @@ class Grid:
     def px(self, val):
         self.pl = val
         self.pr = val
-        self._update_children()
 
     @property
     def py(self):
@@ -349,7 +360,6 @@ class Grid:
     def py(self, val):
         self.pt = val
         self.pb = val
-        self._update_children()
 
     def realize(self, anchor=Anchor.CENTER):
         """For a given grid, return the coordinates of that grid. Notice that
