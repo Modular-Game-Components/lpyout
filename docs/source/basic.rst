@@ -114,3 +114,23 @@ will render like the very first example (i.e. completely fullscreen). To rectify
 
 
 In essence, visually the same thing as the previous example, but internally, the coordinates are different. For the previous example, the parent's coordinates and dimensions are modified (indirectly modifying the children), in this example only the children coordinates are modified and the parent's coordinates and dimensions remain the same.
+
+=======
+Spacing
+=======
+
+We mention one final common transformation: spacing. Currently each cell touches each other cell, but sometimes we want spacing between each cell. This can conveniently be done with the ``s`` keyword argument. From the previous example, change
+
+.. code-block:: python
+
+   grid = Grid.fill_screen(screen_wrapper, 5, 5, p=30)
+
+to
+
+.. code-block:: python
+
+   grid = Grid.fill_screen(screen_wrapper, 5, 5, s=30)
+
+this will give ``30/2px = 15px`` of spacing around each side of each cell. Visually, we get:
+
+.. image:: lpyout_spacing.png
