@@ -1,5 +1,5 @@
 lpyout documentation
-==================
+====================
 
 ``lpyout`` is a library for easily creating grids in Python and managing grid coordinates so you do not have to worry about them when desiging your game.
 
@@ -19,5 +19,6 @@ Contents
 
 .. toctree::
 
+   overview
    basic
    api
