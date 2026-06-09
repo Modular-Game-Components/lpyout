@@ -110,5 +110,7 @@ to
 
 will render like the very first example (i.e. completely fullscreen). To rectify this, we can use ``render_recursive`` instead of ``fast_render``. ``render_recursive`` renders each individual ``Cell`` as a square. Furthermore, when we run ``Grid.fill_screen(...)`` we create a grid with ``5 x 5 = 25`` ``Cells``. ``render_recursive`` finds every cell in a grid and performs some operation based on the *cell* and *not* the parent grid. We will cover this more in detail why this is important. But switching out ``fast_render`` with ``render_recursive`` will give:
 
-.. image:: lpyout_padding.png
+.. image:: lpyout_fast_margin.png
 
+
+In essence, visually the same thing as the previous example, but internally, the coordinates are different. For the previous example, the parent's coordinates and dimensions are modified (indirectly modifying the children), in this example only the children coordinates are modified and the parent's coordinates and dimensions remain the same.
