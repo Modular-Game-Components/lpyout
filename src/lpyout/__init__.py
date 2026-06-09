@@ -85,7 +85,7 @@ class Grid:
                  widths=None, heights=None,
                  max_w=float('inf'), max_h=float('inf'),
                  rspan=1, cspan=1,
-                 spacing=0,
+                 s=0,
                  index=(0,0)):
         """The constructor, should be noted: No children are added here, more
         than likely, you want to use one of the classmethods to construct a
@@ -130,6 +130,7 @@ class Grid:
             self.heights = [self._h * h for h in heights]
         # Max width and max height. (Defaults to float('inf') which is
         # essential no max width or height.
+        self.s = s
         self.max_w = max_w
         self.max_h = max_h
         # Child Grids (likely cells, but could be another grid.)
@@ -152,7 +153,7 @@ class Grid:
                       m=None,
                       mx=None, my=None,
                       ml=None, mr=None, mt=None, mb=None,
-                      spacing=0,
+                      s=0,
                       widths=None, heights=None,
                       parent=None,
                       anchor=Anchor.TOP_LEFT):
@@ -166,7 +167,7 @@ class Grid:
                    mx=mx, my=my,
                    ml=ml, mr=mr, mt=mt, mb=mb,
                    widths=widths, heights=heights,
-                   spacing=spacing,
+                   s=s,
                    parent=parent,
                    anchor=anchor)
         if grid.widths is None:
@@ -199,7 +200,7 @@ class Grid:
                            m=None,
                            mx=None, my=None,
                            ml=None, mr=None, mt=None, mb=None,
-                           spacing=0,
+                           s=0,
                            anchor=Anchor.TOP_LEFT):
         """Given a location and *cell* size, initialize a grid with the
         specified number of rows and columns."""
@@ -212,7 +213,7 @@ class Grid:
                                  m=m,
                                  mx=mx, my=my,
                                  ml=ml, mr=mr, mt=mt, mb=mb,
-                                 spacing=spacing)
+                                 s=s)
 
     @classmethod
     def fill_screen(cls, screen, row_count, col_count,
@@ -223,7 +224,7 @@ class Grid:
                     mx=None, my=None,
                     ml=None, mr=None, mt=None, mb=None,
                     widths=None, heights=None,
-                    spacing=0):
+                    s=0):
         """Make the grid fill the specified screen."""
         return cls.grid_with_dim(0, 0, screen.w, screen.h, 
                                  row_count, col_count,
@@ -234,7 +235,7 @@ class Grid:
                                  mx=mx, my=my,
                                  ml=ml, mr=mr, mt=mt, mb=mb,
                                  widths=widths, heights=heights,
-                                 spacing=spacing)
+                                 s=s)
 
     @classmethod
     def fill_square(cls, screen, row_count, col_count,
@@ -244,7 +245,7 @@ class Grid:
                     m=None,
                     mx=None, my=None,
                     ml=None, mr=None, mt=None, mb=None,
-                    spacing=0):
+                    s=0):
         """Similar to fillscreen, but it ensures the resulting grid is square
         by only filling the largest axis."""
         return cls.grid_with_dim(0, 0,
@@ -258,16 +259,8 @@ class Grid:
                                  m=m,
                                  mx=mx, my=my,
                                  ml=ml, mr=mr, mt=mt, mb=mb,
-                                 spacing=spacing,
+                                 s=s,
                                  anchor=Anchor.CENTER)
-
-    def _update_children(self, dx=0, dy=0):
-        g = self
-        for child in self:
-            child.w = (g.w - (g.pl + g.pr)) / g.col_count - g.spacing
-            child.h = (g.h - (g.pt + g.pb)) / g.row_count - g.spacing
-            child.x += dx
-            child.y += dy
 
     @property
     def x(self):
@@ -276,13 +269,12 @@ class Grid:
             return self._x + self.ml
         else:
             return self._x + self.ml + self.parent.pl \
-                - (self.index[0] * (self.parent.pl + self.parent.pr) / self.parent.col_count)
+                - (self.index[0] * (self.parent.pl + self.parent.pr) / self.parent.col_count) \
+                + self.parent.s / 2
 
     @x.setter
     def x(self, val):
         self._x = val
-        dx = self._x - val
-        self._update_children(dx=dx)
 
     @property
     def y(self):
@@ -291,13 +283,12 @@ class Grid:
             return self._y + self.mt
         else:
             return self._y + self.mt + self.parent.pt \
-                - (self.index[1] * (self.parent.pt + self.parent.pb) / self.parent.row_count)
+                - (self.index[1] * (self.parent.pt + self.parent.pb) / self.parent.row_count) \
+                + self.parent.s / 2
 
     @y.setter
     def y(self, val):
         self._y = val
-        dy = self._y - val
-        self._update_children(dy=dy)
 
     @property
     def w(self):
@@ -308,24 +299,26 @@ class Grid:
         wf = self._w / pw
         cw = self.parent.w - (self.parent.pr + self.parent.pl)
         new_width = wf * cw
-        return min(self.max_w, new_width - (self.mr + self.ml))
+        return min(self.max_w, new_width - (self.mr + self.ml) - self.parent.s)
 
     @w.setter
     def w(self, val):
         self._w = val
-        self._update_children()
 
     @property
     def h(self):
         if self.parent is None or isinstance(self.parent, Screen):
             return min(self.max_h, self._h - (self.mb + self.mt))
-        return min(self.max_h, self._h - (self.mb + self.mt)
-                                       - (self.parent.pb + self.parent.pt) / self.parent.row_count)
+        ph = self.parent.h
+        # Height fraction of parent (no padding)
+        hf = self._h / ph
+        ch = self.parent.h - (self.parent.pt + self.parent.pb)
+        new_height = hf * ch
+        return min(self.max_h, new_height - (self.mb + self.mt) - self.parent.s)
 
     @h.setter
     def h(self, val):
         self._h = val
-        self._update_children()
     
     # Padding utilities.
 
@@ -421,7 +414,6 @@ class VBox(Grid):
     @classmethod
     def divide_screen(cls, screen, n, heights=None):
         """Divide the screen into n equidistant cells row-wise."""
-        # TODO Allow custom heights.
         return super(VBox, cls).fill_screen(screen, n, 1, heights=heights)
 
 
