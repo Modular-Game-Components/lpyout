@@ -21,4 +21,5 @@ Contents
 
    overview
    basic
+   draw
    api
