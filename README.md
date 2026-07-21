@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="lpyout-logo.svg" alt="lpyout">
+</p>
+
 # lpyout
 
 [![PyPI](https://img.shields.io/pypi/v/lpyout)](https://pypi.org/project/lpyout/)
