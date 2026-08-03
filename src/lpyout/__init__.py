@@ -17,8 +17,8 @@ def frac_coords(v1: Screen | Grid, v2: Screen | Grid):
     raw_y = v1.y - v2.y
     return (raw_x / v2.w, raw_y / v2.h)
 
-def grid_map(f: Callable[[Cell], Any], grid: Grid):
-    if isinstance(grid, Cell):
+def grid_map(f: Callable[[Grid], Any], grid: Grid):
+    if len(grid.children) == 0:
         f(grid)
     else:
         for subgrid in grid:
@@ -185,9 +185,11 @@ class Grid:
                 disp_w = accum_w[i]
                 disp_h = accum_h[j]
                 grid.children[i].append(
-                    Cell(grid.x + disp_w, grid.y + disp_h,
+                    Grid(grid.x + disp_w, grid.y + disp_h,
                          w, h,
                          parent=grid,
+                         row_count=1,
+                         col_count=1,
                          index=(i, j))
                 )
         return grid
@@ -382,32 +384,6 @@ class Grid:
         # TODO: Change parent's children!
         self._rspan = val
 
-
-class Cell(Grid):
-    """A 1x1 grid"""
-    def __init__(self, x, y, w, h,
-                 p=None,
-                 px=None, py=None,
-                 pl=None, pr=None, pt=None, pb=None,
-                 m=None,
-                 mx=None, my=None,
-                 ml=None, mr=None, mt=None, mb=None,
-                 rspan=1, cspan=1,
-                 value=None,
-                 parent=None,
-                 index=(0,0)):
-        super().__init__(x, y, w, h,
-                         p=p,
-                         px=px, py=py,
-                         pl=pl, pr=pr, pt=pt, pb=pb,
-                         m=m,
-                         mx=mx, my=my,
-                         ml=ml, mr=mr, mt=mt, mb=mb,
-                         row_count=1, col_count=1, # Def of a cell.
-                         rspan=rspan, cspan=cspan,
-                         value=value,
-                         parent=parent,
-                         index=index)
 
 class VBox(Grid):
     """A 1xn grid"""
